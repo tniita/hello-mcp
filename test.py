@@ -1,11 +1,11 @@
 import json
 import httpx
 
-PLICE_LIST_URL = "https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/"
+PRICE_LIST = "https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/"
 
 try:
-    response = httpx.get(PLICE_LIST_URL, timeout=100)
-    # items = json.loads(response)
+    response = httpx.get(PRICE_LIST, timeout=100)
+    items = json.loads(response.text)
     print(response.text)
 
     # 指定カテゴリのアイテムをフィルタリング
