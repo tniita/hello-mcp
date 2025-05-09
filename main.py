@@ -4,7 +4,7 @@ import json
 
 mcp = FastMCP("OCI Price List")
 
-PLICE_LIST_URL = "https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/"
+PRICE_LIST = "https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/"
 
 
 @mcp.tool()
@@ -18,7 +18,7 @@ def get_price_list(service_name: str) -> float:
 
     try:
         # OCIの価格リストを取得
-        response = httpx.get(PLICE_LIST_URL, timeout=100)
+        response = httpx.get(PRICE_LIST, timeout=100)
         if response.status_code == 200:
             items = json.loads(response.text)
 
