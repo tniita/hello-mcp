@@ -7,7 +7,14 @@ mcp = FastMCP("OCI Price List")
 PRICE_LIST = "https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/"
 
 
-@mcp.tool()
+@mcp.tool(name="get_price_list",
+          description="""
+    Args:
+        service_name: サービス名は「Cloud Infrastructure Kubernetes Engine (OKE)」や「Autonomous Database」など、OCIのサービス名を指定してください。OCI, Oracle Cloud Infrastructure, Cloud Infrastructureなどのバリエーションが存在するので、パターンを考慮してください。例：Cloud Infrastructure Kubernetes Engine (OKE), OCI Streaming
+        metrics_name: メトリクス名は「Virtual Node」や「Autonomous Database」など、OCIのメトリクス名を指定してください。"xx per hour"や"xx per GB"などのバリエーションが存在するので、パターンを考慮してください。例：Virtual Node, Gigabytes of Data Transferred
+    OCIサービスの価格リストから指定されたサービス名とメトリクス名に基づいて、価格を取得します。
+    価格は日本円（JPY）で表示されます。
+    """)
 def get_price_list(service_name: str, metrics_name: str) -> float:
     """
     Get the OCI service price with JPY of PAYG by OCI Service Name and metrics name.
