@@ -8,12 +8,13 @@ PRICE_LIST = "https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/"
 
 
 @mcp.tool()
-def get_price_list(service_name: str) -> float:
+def get_price_list(service_name: str, metrics_name: str) -> float:
     """
-    Get the OCI service price with JPY of PAYG by OCI Service Name.
+    Get the OCI service price with JPY of PAYG by OCI Service Name and metrics name.
 
     Args:
     service_name: OCI Service Name
+    metrics_name: OCI Service Name of Billing Metrics
     """
 
     try:
@@ -22,25 +23,23 @@ def get_price_list(service_name: str) -> float:
         if response.status_code == 200:
             items = json.loads(response.text)
 
-        # 指定カテゴリのアイテムをフィルタリング
-        target_item = next((item for item in items.get("items", [])
-                            if item.get("serviceCategory") == service_name), None)
+        service_items = items.get("items", [])
+        for item in service_items:
+            if service_name in item.get("serviceCategory", "") and metrics_name.title() in item.get("metricName", ""):
+                target_item = item
+                break
 
         if not target_item:
             return 0.0
 
         # JPY通貨のlocalizationを抽出
-        jpy_localization = next((loc for loc in target_item.get("currencyCodeLocalizations", [])
-                                 if loc.get("currencyCode") == "JPY"), None)
-
-        if not jpy_localization:
+        if not (jpy_localization := next((loc for loc in target_item.get("currencyCodeLocalizations", [])
+                                          if loc.get("currencyCode") == "JPY"), None)):
             return 0.0
 
         # 価格モデルがPAY_AS_YOU_GOの価格を取得
-        price_value = next((price.get("value") for price in jpy_localization.get("prices", [])
-                           if price.get("model") == "PAY_AS_YOU_GO"), None)
-
-        return price_value
+        return next((price.get("value") for price in jpy_localization.get("prices", [])
+                    if price.get("model") == "PAY_AS_YOU_GO"), None)
 
     except json.JSONDecodeError as e:
         print(f"JSONのパースエラー: {e}")

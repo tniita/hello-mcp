@@ -4,22 +4,28 @@ import httpx
 PRICE_LIST = "https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/"
 
 try:
+    # OCIの価格リストを取得
     response = httpx.get(PRICE_LIST, timeout=100)
-    items = json.loads(response.text)
-    print(response.text)
+    if response.status_code == 200:
+        items = json.loads(response.text)
 
-    # 指定カテゴリのアイテムをフィルタリング
-    target_item = next((item for item in items.get("items", [])
-                        if item.get("serviceCategory") == "Exadata Exascale Infrastructure"), None)
+    service_items = items.get("items", [])
+    target_item = None
+    for item in service_items:
+        if "Cloud Infrastructure Kubernetes Engine (OKE)" in item.get("serviceCategory", "") and "Virtual Node".title() in item.get("metricName", ""):
+            target_item = item
+            break
+
+    if target_item is None:
+        print("nothing")
 
     # JPY通貨のlocalizationを抽出
-    jpy_localization = next((loc for loc in target_item.get("currencyCodeLocalizations", [])
-                            if loc.get("currencyCode") == "JPY"), None)
+    if (jpy_localization := next((loc for loc in target_item.get("currencyCodeLocalizations", [])
+                                  if loc.get("currencyCode") == "JPY"), None)):
 
-    price_value = next((price.get("value") for price in jpy_localization.get("prices", [])
-                        if price.get("model") == "PAY_AS_YOU_GO"), None)
-
-    print(price_value)
+        # 価格モデルがPAY_AS_YOU_GOの価格を取得
+        print(next((price.get("value") for price in jpy_localization.get("prices", [])
+                    if price.get("model") == "PAY_AS_YOU_GO"), None))
 
 except json.JSONDecodeError as e:
     print(f"JSONのパースエラー: {e}")
