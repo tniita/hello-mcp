@@ -26,6 +26,6 @@ sse-starlette==2.3.6
 starlette==0.47.0
 typer==0.16.0
 typing-inspection==0.4.1
-typing_extensions==4.13.2
+typing_extensions==4.14.0
 uvicorn==0.34.3
 websockets==15.0.1
