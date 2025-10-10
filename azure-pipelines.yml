@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: handson
+  name: handson
 
 steps:
 - script: echo Hello, world!
