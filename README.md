@@ -45,7 +45,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-サーバーは標準入出力（stdio）を使用して通信します。
+サーバーはHTTPプロトコル（streamable-http）を使用して通信し、デフォルトで `http://127.0.0.1:8000` で起動します。
 
 ### get_price_list ツールの使用
 
